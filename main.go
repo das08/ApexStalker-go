@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 
+	"apexstalker-go/models"
+
 	"github.com/joho/godotenv"
 )
 
@@ -15,65 +17,6 @@ type Environments struct {
 	APEX_API_KEY       string
 	DISCORD_ENDPOINT   string
 	TINAX_API_ENDPOINT string
-}
-
-type User struct {
-	uid        string
-	platform   string
-	level      int
-	trio_rank  int
-	arena_rank int
-}
-
-// type DiscordMessageObj struct {
-// 	Title  string         `json:"title"`
-// 	Desc   string         `json:"description"`
-// 	URL    string         `json:"url"`
-// 	Color  int            `json:"color"`
-// 	Image  discordImg     `json:"image"`
-// 	Thum   discordImg     `json:"thumbnail"`
-// 	Author discordAuthor  `json:"author"`
-// 	Fields []discordField `json:"fields"`
-// }
-
-// type DiscordMessage struct {
-// 	user_name  string `json:"username"`
-// 	avatar_url string `json:"avatar_url"`
-// 	content    string `json:"content"`
-// }
-
-type discordImg struct {
-	URL string `json:"url"`
-	H   int    `json:"height"`
-	W   int    `json:"width"`
-}
-type discordAuthor struct {
-	Name string `json:"name"`
-	URL  string `json:"url"`
-	Icon string `json:"icon_url"`
-}
-type discordField struct {
-	Name   string `json:"name"`
-	Value  string `json:"value"`
-	Inline bool   `json:"inline"`
-}
-type discordEmbed struct {
-	Title  string         `json:"title"`
-	Desc   string         `json:"description"`
-	URL    string         `json:"url"`
-	Color  int            `json:"color"`
-	Image  discordImg     `json:"image"`
-	Thum   discordImg     `json:"thumbnail"`
-	Author discordAuthor  `json:"author"`
-	Fields []discordField `json:"fields"`
-}
-
-type discordWebhook struct {
-	UserName  string         `json:"username"`
-	AvatarURL string         `json:"avatar_url"`
-	Content   string         `json:"content"`
-	Embeds    []discordEmbed `json:"embeds"`
-	TTS       bool           `json:"tts"`
 }
 
 func loadEnv() Environments {
@@ -95,7 +38,7 @@ func loadEnv() Environments {
 	return *env
 }
 
-func sendMessage(discord_endpoint string, msgObj *discordWebhook) {
+func sendMessage(discord_endpoint string, msgObj *models.DiscordWebhook) {
 	msgJson, err := json.Marshal(msgObj)
 	if err != nil {
 		fmt.Println("json err:", err)
@@ -126,10 +69,10 @@ func main() {
 	envs := loadEnv()
 	fmt.Printf("a %v", envs.APEX_API_ENDPOINT)
 
-	// msgObj := new(DiscordMessage)
-	// msgObj.user_name = "Go BOT"
-	// msgObj.avatar_url = "https://pbs.twimg.com/profile_images/1108370004590772224/hEX1gucp_400x400.jpg"
-	// msgObj.content = "Hello from Go."
-	msgObj := &discordWebhook{UserName: "Narumium", Content: "Webhook Test"}
+	msgObj := new(models.DiscordWebhook)
+	msgObj.UserName = "Go BOT"
+	msgObj.AvatarURL = "https://pbs.twimg.com/profile_images/1108370004590772224/hEX1gucp_400x400.jpg"
+	msgObj.Content = "Hello from Go."
+
 	sendMessage(envs.DISCORD_ENDPOINT, msgObj)
 }
