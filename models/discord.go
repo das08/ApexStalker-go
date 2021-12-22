@@ -1,5 +1,12 @@
 package models
 
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"net/http"
+)
+
 type DiscordImg struct {
 	URL string `json:"url"`
 	H   int    `json:"height"`
@@ -32,4 +39,31 @@ type DiscordWebhook struct {
 	Content   string         `json:"content"`
 	Embeds    []DiscordEmbed `json:"embeds"`
 	TTS       bool           `json:"tts"`
+}
+
+func SendMessage(discord_endpoint string, msgObj *DiscordWebhook) {
+	msgJson, err := json.Marshal(msgObj)
+	if err != nil {
+		fmt.Println("json err:", err)
+		return
+	}
+
+	req, err := http.NewRequest("POST", discord_endpoint, bytes.NewBuffer(msgJson))
+	if err != nil {
+		fmt.Println("new request err:", err)
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	client := http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("client err:", err)
+		return
+	}
+	if resp.StatusCode == 204 {
+		fmt.Println("Success") //成功
+	} else {
+		fmt.Printf("%#v\n", resp) //失敗
+	}
 }
