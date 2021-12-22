@@ -3,6 +3,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=go,macos,visualstudiocode
 
 .env
+apex.db
 
 ### Go ###
 # Binaries for programs and plugins
