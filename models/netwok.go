@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -72,14 +71,13 @@ func GetApexStats(api_endpoint string, api_key string, platform string, uid stri
 	}
 
 	// Get specific stats
-	userData := Stats{}
-	jsonErr := json.Unmarshal(body, &userData)
+	userStats := Stats{}
+	jsonErr := json.Unmarshal(body, &userStats)
 	if jsonErr != nil {
 		log.Fatal(jsonErr)
 		return nil, err
 	}
-	userData.Data.Segments = userData.Data.Segments[:1]
+	userStats.Data.Segments = userStats.Data.Segments[:1]
 
-	fmt.Printf("%+v\n", userData.Data)
-	return &userData, nil
+	return &userStats, nil
 }
