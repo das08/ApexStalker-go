@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -41,4 +42,13 @@ func GetPlayers(db *sql.DB) []User {
 	}
 
 	return UserList
+}
+
+func UpsertPlayerData(db *sql.DB, u User) {
+	query := `REPLACE INTO user_data values (?, ?, ?, ?, ?, ?)`
+	_, err := db.Exec(query, u.Uid, u.Platform, u.Level, u.Trio_rank, u.Arena_rank, u.Last_update)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 }
