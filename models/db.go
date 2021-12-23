@@ -2,22 +2,41 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
 type User struct {
-	uid        string
-	platform   string
-	level      int
-	trio_rank  int
-	arena_rank int
+	Uid         string `db:"uid"`
+	Platform    string `db:"platform"`
+	Level       int    `db:"level"`
+	Trio_rank   int    `db:"trio_rank"`
+	Arena_rank  int    `db:"arena_rank"`
+	Last_update int    `db:"last_update"`
 }
 
-var DbConnection *sql.DB
+func GetPlayers() []User {
+	db, _ := sql.Open("sqlite3", "./apex.db")
+	defer db.Close()
+	var UserList []User
+	rows, err := db.Query(`SELECT * FROM user_data`)
+	if err != nil {
+		panic(err)
+	}
 
-func main() {
-	DbConnection, _ := sql.Open("sqlite3", "./apex.db")
-	defer DbConnection.Close()
+	defer rows.Close()
+	for rows.Next() {
+		var u User
+		for rows.Next() {
+			err := rows.Scan(&u.Uid, &u.Platform, &u.Level, &u.Trio_rank, &u.Arena_rank, &u.Last_update)
+			if err != nil {
+				fmt.Println(err)
+			}
+			UserList = append(UserList, u)
+		}
 
+	}
+
+	return UserList
 }
