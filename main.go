@@ -20,7 +20,7 @@ func main() {
 
 	for _, v := range userList {
 		fmt.Printf("Data: %+v\n", v)
+		// models.GetApexStats(envs.APEX_API_ENDPOINT, envs.APEX_API_KEY, v.Platform, v.Uid)
 	}
 
-	models.GetApexStats("", "")
 }

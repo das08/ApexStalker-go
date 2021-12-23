@@ -24,21 +24,21 @@ type PlatformInfoDetail struct {
 }
 
 type SegmentsDetail struct {
-	Stats StatsDetail `json:"stats,omitempty"`
+	Stats StatsDetail `json:"stats"`
 }
 
 type StatsDetail struct {
-	Level       Value `json:"level,omitempty"`
-	Rank_score  Value `json:"rankScore,omitempty"`
-	Arena_Score Value `json:"arenaRankScore,omitempty"`
+	Level       Value `json:"level"`
+	Rank_score  Value `json:"rankScore"`
+	Arena_Score Value `json:"arenaRankScore"`
 }
 
 type Value struct {
-	Val float32 `json:"value,omitempty"`
+	Val float32 `json:"value"`
 }
 
-func GetApexStats(api_endpoint string, api_key string, uid string) (*Stats, error) {
-	request, err := http.NewRequest("GET", api_endpoint, nil)
+func GetApexStats(api_endpoint string, api_key string, platform string, uid string) (*Stats, error) {
+	request, err := http.NewRequest("GET", api_endpoint+"/standard/profile/"+platform+"/"+uid, nil)
 	if err != nil {
 		log.Fatal(err)
 		return nil, err
@@ -80,6 +80,6 @@ func GetApexStats(api_endpoint string, api_key string, uid string) (*Stats, erro
 	}
 	userData.Data.Segments = userData.Data.Segments[:1]
 
-	fmt.Printf("%+v", userData.Data)
+	fmt.Printf("%+v\n", userData.Data)
 	return &userData, nil
 }
