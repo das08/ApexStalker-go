@@ -77,7 +77,7 @@ func GetApexStats(api_endpoint string, api_key string, platform string, uid stri
 		log.Fatal(jsonErr)
 		return nil, err
 	}
-	userStats.Data.Segments = userStats.Data.Segments[:1]
+	// userStats.Data.Segments = userStats.Data.Segments[:1]
 
 	return &userStats, nil
 }
