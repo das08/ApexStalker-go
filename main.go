@@ -21,4 +21,6 @@ func main() {
 	for _, v := range userList {
 		fmt.Printf("Data: %+v\n", v)
 	}
+
+	models.GetApexStats("", "")
 }
