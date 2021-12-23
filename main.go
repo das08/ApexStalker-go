@@ -10,17 +10,22 @@ func compare(old models.UserData, new models.Stats) (bool, *[]models.DiscordFiel
 	timestamp := time.Now().Unix()
 	hasUpdate := false
 	messageField := []models.DiscordField{}
+
+	messageField = append(messageField, models.DiscordField{Name: "テスト配信", Value: "これはテスト配信です。"})
+
 	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.Level.Val) > old.Level {
 		hasUpdate = true
 		messageField = append(messageField, models.DiscordField{Name: "レベル", Value: fmt.Sprint(old.Level) + "→" + fmt.Sprint(int(new.Data.Segments[0].Stats.Level.Val)) + ":laughing:", Inline: true})
 	}
-	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.Rank_score.Val) > old.Trio_rank {
+	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.Rank_score.Val) != old.Trio_rank {
 		hasUpdate = true
-		messageField = append(messageField, models.DiscordField{Name: "トリオRank", Value: fmt.Sprint(old.Trio_rank) + "→" + fmt.Sprint(int(new.Data.Segments[0].Stats.Rank_score.Val)) + ":laughing:", Inline: true})
+		trioRank := int(new.Data.Segments[0].Stats.Rank_score.Val)
+		messageField = append(messageField, models.DiscordField{Name: "トリオRank", Value: models.GetTrioTierBadge(old.Trio_rank) + fmt.Sprint(old.Trio_rank) + "→" + models.GetTrioTierBadge(trioRank) + fmt.Sprint(trioRank), Inline: true})
 	}
-	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.Arena_Score.Val) > old.Arena_rank {
+	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.Arena_Score.Val) != old.Arena_rank {
 		hasUpdate = true
-		messageField = append(messageField, models.DiscordField{Name: "アリーナRank", Value: fmt.Sprint(old.Arena_rank) + "→" + fmt.Sprint(int(new.Data.Segments[0].Stats.Arena_Score.Val)) + ":laughing:", Inline: true})
+		arenaRank := int(new.Data.Segments[0].Stats.Arena_Score.Val)
+		messageField = append(messageField, models.DiscordField{Name: "アリーナRank", Value: models.GetArenaTierBadge(old.Arena_rank) + fmt.Sprint(old.Arena_rank) + "→" + models.GetArenaTierBadge(arenaRank) + fmt.Sprint(arenaRank), Inline: true})
 	}
 
 	return hasUpdate, &messageField
