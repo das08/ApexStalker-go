@@ -16,9 +16,13 @@ type User struct {
 	Last_update int    `db:"last_update"`
 }
 
-func GetPlayers() []User {
+func Connect() *sql.DB {
+	// Create db client
 	db, _ := sql.Open("sqlite3", "./apex.db")
-	defer db.Close()
+	return db
+}
+
+func GetPlayers(db *sql.DB) []User {
 	var UserList []User
 	rows, err := db.Query(`SELECT * FROM user_data`)
 	if err != nil {

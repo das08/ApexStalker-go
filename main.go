@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	// Load environment values
 	envs := models.LoadEnv()
 
 	msgObj := new(models.DiscordWebhook)
@@ -15,7 +16,9 @@ func main() {
 	msgObj.Content = "Hello from Go."
 
 	// models.SendMessage(envs.DISCORD_ENDPOINT, msgObj)
-	userList := models.GetPlayers()
+	db := models.Connect()
+	defer db.Close()
+	userList := models.GetPlayers(db)
 
 	for _, v := range userList {
 		fmt.Printf("Data: %+v\n", v)
@@ -25,5 +28,4 @@ func main() {
 		}
 		fmt.Printf("%+v\n", userStats.Data)
 	}
-
 }
