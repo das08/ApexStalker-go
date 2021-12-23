@@ -1,24 +1,38 @@
 package main
 
 import (
-	"fmt"
-
 	"apexstalker-go/models"
+	"fmt"
+	"time"
 )
+
+func compare(old models.UserData, new models.Stats) (bool, *[]models.DiscordField) {
+	timestamp := time.Now().Unix()
+	hasUpdate := false
+	messageField := []models.DiscordField{}
+	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.Level.Val) > old.Level {
+		hasUpdate = true
+		messageField = append(messageField, models.DiscordField{Name: "レベル", Value: fmt.Sprint(old.Level) + "→" + fmt.Sprint(int(new.Data.Segments[0].Stats.Level.Val)) + ":laughing:", Inline: true})
+	}
+	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.Rank_score.Val) > old.Trio_rank {
+		hasUpdate = true
+		messageField = append(messageField, models.DiscordField{Name: "トリオRank", Value: fmt.Sprint(old.Trio_rank) + "→" + fmt.Sprint(int(new.Data.Segments[0].Stats.Rank_score.Val)) + ":laughing:", Inline: true})
+	}
+	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.Arena_Score.Val) > old.Arena_rank {
+		hasUpdate = true
+		messageField = append(messageField, models.DiscordField{Name: "アリーナRank", Value: fmt.Sprint(old.Arena_rank) + "→" + fmt.Sprint(int(new.Data.Segments[0].Stats.Arena_Score.Val)) + ":laughing:", Inline: true})
+	}
+
+	return hasUpdate, &messageField
+}
 
 func main() {
 	// Load environment values
 	envs := models.LoadEnv()
 
-	msgObj := new(models.DiscordWebhook)
-	msgObj.UserName = "Go BOT"
-	msgObj.AvatarURL = "https://pbs.twimg.com/profile_images/1108370004590772224/hEX1gucp_400x400.jpg"
-	msgObj.Content = "Hello from Go."
-
-	// models.SendMessage(envs.DISCORD_ENDPOINT, msgObj)
 	db := models.Connect()
 	defer db.Close()
-	userList := models.GetPlayers(db)
+	userList := models.GetPlayerData(db)
 
 	for _, v := range userList {
 		fmt.Printf("Data: %+v\n", v)
@@ -27,5 +41,22 @@ func main() {
 			return
 		}
 		fmt.Printf("%+v\n", userStats.Data)
+		// models.UpsertPlayerData(db, )
+		hasUpdate, messageField := compare(v, *userStats)
+		if hasUpdate {
+			msgObj := new(models.DiscordWebhook)
+			msgObj.UserName = "Go BOT"
+			msgObj.AvatarURL = "https://pbs.twimg.com/profile_images/1108370004590772224/hEX1gucp_400x400.jpg"
+			msgObj.Embeds = []models.DiscordEmbed{
+				{
+					Title:  "\U0001F38A" + v.Uid + "の戦績変化\U0001F389",
+					Color:  0x550000,
+					Fields: *messageField,
+				},
+			}
+
+			models.SendMessage(envs.DISCORD_ENDPOINT, msgObj)
+		}
 	}
+
 }
