@@ -8,7 +8,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-type User struct {
+type UserData struct {
 	Uid         string `db:"uid"`
 	Platform    string `db:"platform"`
 	Level       int    `db:"level"`
@@ -23,8 +23,8 @@ func Connect() *sql.DB {
 	return db
 }
 
-func GetPlayers(db *sql.DB) []User {
-	var UserList []User
+func GetPlayerData(db *sql.DB) []UserData {
+	var userData []UserData
 	rows, err := db.Query(`SELECT * FROM user_data`)
 	if err != nil {
 		panic(err)
@@ -32,19 +32,19 @@ func GetPlayers(db *sql.DB) []User {
 
 	defer rows.Close()
 	for rows.Next() {
-		var u User
+		var u UserData
 		err := rows.Scan(&u.Uid, &u.Platform, &u.Level, &u.Trio_rank, &u.Arena_rank, &u.Last_update)
 		if err != nil {
 			fmt.Println(err)
 		}
-		UserList = append(UserList, u)
+		userData = append(userData, u)
 
 	}
 
-	return UserList
+	return userData
 }
 
-func UpsertPlayerData(db *sql.DB, u User) {
+func UpsertPlayerData(db *sql.DB, u UserData) {
 	query := `REPLACE INTO user_data values (?, ?, ?, ?, ?, ?)`
 	_, err := db.Exec(query, u.Uid, u.Platform, u.Level, u.Trio_rank, u.Arena_rank, u.Last_update)
 	if err != nil {
