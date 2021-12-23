@@ -28,13 +28,11 @@ func GetPlayers() []User {
 	defer rows.Close()
 	for rows.Next() {
 		var u User
-		for rows.Next() {
-			err := rows.Scan(&u.Uid, &u.Platform, &u.Level, &u.Trio_rank, &u.Arena_rank, &u.Last_update)
-			if err != nil {
-				fmt.Println(err)
-			}
-			UserList = append(UserList, u)
+		err := rows.Scan(&u.Uid, &u.Platform, &u.Level, &u.Trio_rank, &u.Arena_rank, &u.Last_update)
+		if err != nil {
+			fmt.Println(err)
 		}
+		UserList = append(UserList, u)
 
 	}
 

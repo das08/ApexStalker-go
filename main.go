@@ -8,7 +8,6 @@ import (
 
 func main() {
 	envs := models.LoadEnv()
-	fmt.Printf("a %v", envs.APEX_API_ENDPOINT)
 
 	msgObj := new(models.DiscordWebhook)
 	msgObj.UserName = "Go BOT"
@@ -20,7 +19,7 @@ func main() {
 
 	for _, v := range userList {
 		fmt.Printf("Data: %+v\n", v)
-		// models.GetApexStats(envs.APEX_API_ENDPOINT, envs.APEX_API_KEY, v.Platform, v.Uid)
+		models.GetApexStats(envs.APEX_API_ENDPOINT, envs.APEX_API_KEY, v.Platform, v.Uid)
 	}
 
 }
