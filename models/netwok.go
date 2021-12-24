@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -77,7 +78,12 @@ func GetApexStats(api_endpoint string, api_key string, platform string, uid stri
 		log.Fatal(jsonErr)
 		return nil, err
 	}
-	// userStats.Data.Segments = userStats.Data.Segments[:1]
+
+	if len(userStats.Data.Segments) == 0 {
+		log.Fatal("Err: API Response invalid.")
+		return nil, fmt.Errorf("Err: API Response invalid.")
+	}
+	userStats.Data.Segments = userStats.Data.Segments[:1]
 
 	return &userStats, nil
 }
