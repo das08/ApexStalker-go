@@ -9,12 +9,16 @@ import (
 )
 
 type UserData struct {
-	Uid         string `db:"uid"`
-	Platform    string `db:"platform"`
-	Level       int    `db:"level"`
-	Trio_rank   int    `db:"trio_rank"`
-	Arena_rank  int    `db:"arena_rank"`
-	Last_update int    `db:"last_update"`
+	Uid      string `db:"uid"`
+	Platform string `db:"platform"`
+	Stats    UserDataDetail
+}
+
+type UserDataDetail struct {
+	Level       int `db:"level"`
+	Trio_rank   int `db:"trio_rank"`
+	Arena_rank  int `db:"arena_rank"`
+	Last_update int `db:"last_update"`
 }
 
 func Connect() *sql.DB {
