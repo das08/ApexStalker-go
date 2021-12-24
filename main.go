@@ -6,29 +6,32 @@ import (
 	"time"
 )
 
-func compare(old models.UserData, new models.Stats) (bool, *[]models.DiscordField) {
+func compare(old models.UserData, new models.Stats) (bool, *[]models.DiscordField, *models.UserDataDetail) {
 	timestamp := time.Now().Unix()
 	hasUpdate := false
 	messageField := []models.DiscordField{}
 
 	messageField = append(messageField, models.DiscordField{Name: "テスト配信", Value: "Hello from Go"})
 
-	if timestamp > int64(old.Stats.Last_update) && int(new.Data.Segments[0].Stats.Level.Val) > old.Stats.Level {
+	level := int(new.Data.Segments[0].Stats.Level.Val)
+	trioRank := int(new.Data.Segments[0].Stats.Rank_score.Val)
+	arenaRank := int(new.Data.Segments[0].Stats.Arena_Score.Val)
+	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.Level.Val) > old.Stats.Level {
 		hasUpdate = true
-		messageField = append(messageField, models.DiscordField{Name: "レベル", Value: fmt.Sprint(old.Stats.Level) + "→" + fmt.Sprint(int(new.Data.Segments[0].Stats.Level.Val)) + ":laughing:", Inline: false})
+		messageField = append(messageField, models.DiscordField{Name: "レベル", Value: fmt.Sprint(old.Stats.Level) + "→" + fmt.Sprint(level) + ":laughing:", Inline: false})
 	}
-	if timestamp > int64(old.Stats.Last_update) && int(new.Data.Segments[0].Stats.Rank_score.Val) != old.Stats.Trio_rank {
+	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.Rank_score.Val) != old.Stats.Trio_rank {
 		hasUpdate = true
-		trioRank := int(new.Data.Segments[0].Stats.Rank_score.Val)
 		messageField = append(messageField, models.DiscordField{Name: "トリオRank", Value: models.GetTrioTierBadge(old.Stats.Trio_rank) + fmt.Sprint(old.Stats.Trio_rank) + "→" + models.GetTrioTierBadge(trioRank) + fmt.Sprint(trioRank), Inline: false})
 	}
-	if timestamp > int64(old.Stats.Last_update) && int(new.Data.Segments[0].Stats.Arena_Score.Val) != old.Stats.Arena_rank {
+	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.Arena_Score.Val) != old.Stats.Arena_rank {
 		hasUpdate = true
-		arenaRank := int(new.Data.Segments[0].Stats.Arena_Score.Val)
 		messageField = append(messageField, models.DiscordField{Name: "アリーナRank", Value: models.GetArenaTierBadge(old.Stats.Arena_rank) + fmt.Sprint(old.Stats.Arena_rank) + "→" + models.GetArenaTierBadge(arenaRank) + fmt.Sprint(arenaRank), Inline: false})
 	}
 
-	return hasUpdate, &messageField
+	userDataDetail := models.UserDataDetail{Level: level, Trio_rank: trioRank, Arena_rank: arenaRank}
+
+	return hasUpdate, &messageField, &userDataDetail
 }
 
 func main() {
@@ -47,7 +50,9 @@ func main() {
 		}
 		fmt.Printf("%+v\n", userStats.Data)
 		// models.UpsertPlayerData(db, )
-		hasUpdate, messageField := compare(v, *userStats)
+		hasUpdate, messageField, userDataDetail := compare(v, *userStats)
+		models.UpdatePlayerData(db, v.Uid, *userDataDetail)
+
 		if hasUpdate {
 			msgObj := new(models.DiscordWebhook)
 			msgObj.UserName = "Go BOT"
