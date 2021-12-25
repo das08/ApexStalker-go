@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+var envs models.Environments
+
 func compare(old models.UserData, new models.Stats) (bool, *[]models.DiscordField, *models.UserDataDetail) {
 	timestamp := time.Now().Unix()
 	hasUpdate := false
@@ -22,11 +24,11 @@ func compare(old models.UserData, new models.Stats) (bool, *[]models.DiscordFiel
 	}
 	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.Rank_score.Val) != old.Stats.Trio_rank {
 		hasUpdate = true
-		messageField = append(messageField, models.DiscordField{Name: "トリオRank", Value: models.GetTrioTierBadge(old.Stats.Trio_rank) + fmt.Sprint(old.Stats.Trio_rank) + "→" + models.GetTrioTierBadge(trioRank) + fmt.Sprint(trioRank), Inline: false})
+		messageField = append(messageField, models.DiscordField{Name: "トリオRank", Value: models.GetTrioTierBadge(&envs, old.Stats.Trio_rank) + fmt.Sprint(old.Stats.Trio_rank) + "→" + models.GetTrioTierBadge(&envs, trioRank) + fmt.Sprint(trioRank), Inline: false})
 	}
 	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.Arena_Score.Val) != old.Stats.Arena_rank {
 		hasUpdate = true
-		messageField = append(messageField, models.DiscordField{Name: "アリーナRank", Value: models.GetArenaTierBadge(old.Stats.Arena_rank) + fmt.Sprint(old.Stats.Arena_rank) + "→" + models.GetArenaTierBadge(arenaRank) + fmt.Sprint(arenaRank), Inline: false})
+		messageField = append(messageField, models.DiscordField{Name: "アリーナRank", Value: models.GetArenaTierBadge(&envs, old.Stats.Arena_rank) + fmt.Sprint(old.Stats.Arena_rank) + "→" + models.GetArenaTierBadge(&envs, arenaRank) + fmt.Sprint(arenaRank), Inline: false})
 	}
 
 	userDataDetail := models.UserDataDetail{Level: level, Trio_rank: trioRank, Arena_rank: arenaRank}
@@ -36,7 +38,7 @@ func compare(old models.UserData, new models.Stats) (bool, *[]models.DiscordFiel
 
 func main() {
 	// Load environment values
-	envs := models.LoadEnv(true)
+	envs = models.LoadEnv(true)
 
 	db := models.Connect()
 	defer db.Close()

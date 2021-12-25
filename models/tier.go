@@ -1,6 +1,6 @@
 package models
 
-func GetTrioTierBadge(rank int) string {
+func GetTrioTierBadge(env *Environments, rank int) string {
 	var badge string
 	switch {
 	case rank < 1200:
@@ -16,7 +16,7 @@ func GetTrioTierBadge(rank int) string {
 	return badge
 }
 
-func GetArenaTierBadge(rank int) string {
+func GetArenaTierBadge(env *Environments, rank int) string {
 	var badge string
 	switch {
 	case rank < 1600:
