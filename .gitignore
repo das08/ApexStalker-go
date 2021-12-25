@@ -3,6 +3,8 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=go,macos,visualstudiocode
 
 .env
+.env_local
+.env_prod
 apex.db
 
 ### Go ###

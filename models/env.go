@@ -14,9 +14,14 @@ type Environments struct {
 	TINAX_API_ENDPOINT string
 }
 
-func LoadEnv() Environments {
+func LoadEnv(debug bool) Environments {
+	var err error
 	// LOADS .env file
-	err := godotenv.Load(".env")
+	if debug {
+		err = godotenv.Load(".env_local")
+	} else {
+		err = godotenv.Load(".env_prod")
+	}
 
 	if err != nil {
 		fmt.Println("Err: Loading .env failed.")

@@ -36,7 +36,7 @@ func compare(old models.UserData, new models.Stats) (bool, *[]models.DiscordFiel
 
 func main() {
 	// Load environment values
-	envs := models.LoadEnv()
+	envs := models.LoadEnv(true)
 
 	db := models.Connect()
 	defer db.Close()
@@ -65,7 +65,7 @@ func main() {
 				},
 			}
 
-			// models.SendMessage(envs.DISCORD_ENDPOINT, msgObj)
+			models.SendMessage(envs.DISCORD_ENDPOINT, msgObj)
 		}
 	}
 
