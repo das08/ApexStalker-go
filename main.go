@@ -60,7 +60,7 @@ func main() {
 		fmt.Printf("Data: %+v\n", v)
 		userStats, err := models.GetApexStats(envs.APEX_API_ENDPOINT, envs.APEX_API_KEY, v.Platform, v.Uid)
 		if err != nil {
-			return
+			continue
 		}
 		fmt.Printf("%+v\n", userStats.Data)
 		// models.UpsertPlayerData(db, )
