@@ -56,9 +56,14 @@ func main() {
 	defer db.Close()
 	userList := models.GetPlayerData(db)
 
+	statsChan := make(chan *models.Stats, 5)
+	errorChan := make(chan error, 5)
+
 	for _, v := range userList {
 		fmt.Printf("Data: %+v\n", v)
-		userStats, err := models.GetApexStats(envs.APEX_API_ENDPOINT, envs.APEX_API_KEY, v.Platform, v.Uid)
+		go models.GetApexStats2(statsChan, errorChan, envs.APEX_API_ENDPOINT, envs.APEX_API_KEY, v.Platform, v.Uid)
+		userStats := <-statsChan
+		err := <-errorChan
 		if err != nil {
 			continue
 		}
