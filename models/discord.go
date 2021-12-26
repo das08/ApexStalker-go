@@ -62,8 +62,8 @@ func SendMessage(discord_endpoint string, msgObj *DiscordWebhook) {
 		return
 	}
 	if resp.StatusCode == 204 {
-		fmt.Println("Success") //成功
+		fmt.Println("Success") // Success
 	} else {
-		fmt.Printf("%#v\n", resp) //失敗
+		fmt.Printf("%#v\n", resp) // Failure
 	}
 }

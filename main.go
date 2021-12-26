@@ -52,15 +52,21 @@ func main() {
 	// Load environment values
 	envs = models.LoadEnv(false)
 
+	// Create db connection client
 	db := models.Connect()
 	defer db.Close()
-	userList := models.GetPlayerData(db)
 
+	// Create channels for go routine
 	statsChan := make(chan *models.Stats, 5)
 	errorChan := make(chan error, 5)
 
+	// Load old stats list
+	userList := models.GetPlayerData(db)
+
 	for _, v := range userList {
 		fmt.Printf("Old: %+v\n", v)
+
+		// Create go routine
 		go models.GetApexStats(statsChan, errorChan, envs.APEX_API_ENDPOINT, envs.APEX_API_KEY, v.Platform, v.Uid)
 		userStats := <-statsChan
 		err := <-errorChan
@@ -70,9 +76,12 @@ func main() {
 		}
 		fmt.Printf("New: %+v\n", userStats.Data)
 
+		// Compare old with new stats data
 		hasUpdate, messageField, userDataDetail := compare(v, *userStats)
+		// Save new stats
 		models.UpdatePlayerData(db, v.Uid, *userDataDetail)
 
+		// Send notification if there was an update in stats
 		if hasUpdate {
 			msgObj := new(models.DiscordWebhook)
 			msgObj.UserName = "Go BOT"
@@ -84,10 +93,11 @@ func main() {
 					Fields: *messageField,
 				},
 			}
-
 			models.SendMessage(envs.DISCORD_ENDPOINT, msgObj)
 		}
 	}
+
+	// Close channels
 	close(statsChan)
 	close(errorChan)
 }

@@ -83,13 +83,17 @@ func GetApexStats(statsChan chan *Stats, errorChan chan error, api_endpoint stri
 		errorChan <- err
 	}
 
+	// Validate response data
 	if len(userStats.Data.Segments) == 0 {
 		statsChan <- nil
 		errorChan <- fmt.Errorf("err: api response invalid")
 		return
 	}
+
+	// Delete surplus data
 	userStats.Data.Segments = userStats.Data.Segments[:1]
 
+	// Set results to channels
 	statsChan <- &userStats
 	errorChan <- nil
 }
