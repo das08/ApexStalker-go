@@ -4,13 +4,13 @@ func GetTrioTierBadge(env *Environments, rank int) string {
 	var badge string
 	switch {
 	case rank < 1200:
-		badge = "<:bronze:910106036197797938>"
+		badge = env.BRONZE_BADGE
 	case rank < 2800:
-		badge = "<:silver:910102394275233832>"
+		badge = env.SILVER_BADGE
 	case rank < 4800:
-		badge = "<:gold:910106036051009556>"
+		badge = env.GOLD_BADGE
 	default:
-		badge = "<:platinum:910106036055179294>"
+		badge = env.PLATINUM_BADGE
 	}
 
 	return badge
@@ -20,13 +20,13 @@ func GetArenaTierBadge(env *Environments, rank int) string {
 	var badge string
 	switch {
 	case rank < 1600:
-		badge = "<:bronze:910106036197797938>"
+		badge = env.BRONZE_BADGE
 	case rank < 3200:
-		badge = "<:silver:910102394275233832>"
+		badge = env.SILVER_BADGE
 	case rank < 4800:
-		badge = "<:gold:910106036051009556>"
+		badge = env.GOLD_BADGE
 	default:
-		badge = "<:platinum:910106036055179294>"
+		badge = env.PLATINUM_BADGE
 	}
 
 	return badge
