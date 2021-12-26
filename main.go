@@ -60,15 +60,16 @@ func main() {
 	errorChan := make(chan error, 5)
 
 	for _, v := range userList {
-		fmt.Printf("Data: %+v\n", v)
-		go models.GetApexStats2(statsChan, errorChan, envs.APEX_API_ENDPOINT, envs.APEX_API_KEY, v.Platform, v.Uid)
+		fmt.Printf("Old: %+v\n", v)
+		go models.GetApexStats(statsChan, errorChan, envs.APEX_API_ENDPOINT, envs.APEX_API_KEY, v.Platform, v.Uid)
 		userStats := <-statsChan
 		err := <-errorChan
 		if err != nil {
+			fmt.Println(err)
 			continue
 		}
-		fmt.Printf("%+v\n", userStats.Data)
-		// models.UpsertPlayerData(db, )
+		fmt.Printf("New: %+v\n", userStats.Data)
+
 		hasUpdate, messageField, userDataDetail := compare(v, *userStats)
 		models.UpdatePlayerData(db, v.Uid, *userDataDetail)
 
@@ -87,5 +88,6 @@ func main() {
 			models.SendMessage(envs.DISCORD_ENDPOINT, msgObj)
 		}
 	}
-
+	close(statsChan)
+	close(errorChan)
 }
