@@ -46,11 +46,11 @@ func GetApexStats(api_endpoint string, api_key string, platform string, uid stri
 
 	// Set GET params
 	params := request.URL.Query()
-	params.Add("TRN-Api-Key", api_key)
+	params.Set("TRN-Api-Key", api_key)
 	request.URL.RawQuery = params.Encode()
 
 	// Set timeouts to 5s
-	timeout := time.Duration(5 * time.Second)
+	timeout := time.Duration(10 * time.Second)
 	client := &http.Client{
 		Timeout: timeout,
 	}
