@@ -20,25 +20,25 @@ func rankDiff(old int, new int) string {
 	return fmt.Sprintf(" (%s%d) ", sign, diff)
 }
 
-func compare(old models.UserData, new models.Stats) (bool, *[]models.DiscordField, *models.UserDataDetail) {
+func compare(old models.UserData, new models.UserStats) (bool, *[]models.DiscordField, *models.UserDataDetail) {
 	timestamp := time.Now().Unix()
 	hasUpdate := false
 	messageField := []models.DiscordField{}
 
 	messageField = append(messageField, models.DiscordField{Name: "テスト配信", Value: "Hello from Go"})
 
-	level := int(new.Data.Segments[0].Stats.Level.Val)
-	trioRank := int(new.Data.Segments[0].Stats.Rank_score.Val)
-	arenaRank := int(new.Data.Segments[0].Stats.Arena_Score.Val)
-	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.Level.Val) > old.Stats.Level {
+	level := int(new.Data.Segments[0].Stats.Level.Value)
+	trioRank := int(new.Data.Segments[0].Stats.RankScore.Value)
+	arenaRank := int(new.Data.Segments[0].Stats.ArenaRankScore.Value)
+	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.Level.Value) > old.Stats.Level {
 		hasUpdate = true
 		messageField = append(messageField, models.DiscordField{Name: "レベル", Value: fmt.Sprint(old.Stats.Level) + "→" + fmt.Sprint(level) + rankDiff(old.Stats.Level, level) + ":laughing:", Inline: false})
 	}
-	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.Rank_score.Val) != old.Stats.Trio_rank {
+	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.RankScore.Value) != old.Stats.Trio_rank {
 		hasUpdate = true
 		messageField = append(messageField, models.DiscordField{Name: "トリオRank", Value: models.GetTrioTierBadge(&envs, old.Stats.Trio_rank) + fmt.Sprint(old.Stats.Trio_rank) + "→" + models.GetTrioTierBadge(&envs, trioRank) + fmt.Sprint(trioRank) + rankDiff(old.Stats.Trio_rank, trioRank), Inline: false})
 	}
-	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.Arena_Score.Val) != old.Stats.Arena_rank {
+	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.ArenaRankScore.Value) != old.Stats.Arena_rank {
 		hasUpdate = true
 		messageField = append(messageField, models.DiscordField{Name: "アリーナRank", Value: models.GetArenaTierBadge(&envs, old.Stats.Arena_rank) + fmt.Sprint(old.Stats.Arena_rank) + "→" + models.GetArenaTierBadge(&envs, arenaRank) + fmt.Sprint(arenaRank) + rankDiff(old.Stats.Arena_rank, arenaRank), Inline: false})
 	}
@@ -50,15 +50,11 @@ func compare(old models.UserData, new models.Stats) (bool, *[]models.DiscordFiel
 
 func main() {
 	// Load environment values
-	envs = models.LoadEnv(false)
+	envs = models.LoadEnv(true)
 
 	// Create db connection client
 	db := models.Connect()
 	defer db.Close()
-
-	// Create channels for go routine
-	statsChan := make(chan *models.Stats, 5)
-	errorChan := make(chan error, 5)
 
 	// Load old stats list
 	userList := models.GetPlayerData(db)
@@ -67,14 +63,8 @@ func main() {
 		fmt.Printf("Old: %+v\n", v)
 
 		// Create go routine
-		go models.GetApexStats(statsChan, errorChan, envs.APEX_API_ENDPOINT, envs.APEX_API_KEY, v.Platform, v.Uid)
-		userStats := <-statsChan
-		err := <-errorChan
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-		fmt.Printf("New: %+v\n", userStats.Data)
+		userStats := models.GetApexStats(envs.APEX_API_ENDPOINT, envs.APEX_API_KEY, v.Platform, v.Uid)
+		fmt.Printf("New: \n")
 
 		// Compare old with new stats data
 		hasUpdate, messageField, userDataDetail := compare(v, *userStats)
@@ -96,8 +86,4 @@ func main() {
 			models.SendMessage(envs.DISCORD_ENDPOINT, msgObj)
 		}
 	}
-
-	// Close channels
-	close(statsChan)
-	close(errorChan)
 }

@@ -3,10 +3,9 @@ package models
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"time"
-
-	_ "github.com/mattn/go-sqlite3"
 )
 
 type UserData struct {
@@ -24,7 +23,10 @@ type UserDataDetail struct {
 
 func Connect() *sql.DB {
 	// Create db client
-	db, _ := sql.Open("sqlite3", "./apex.db")
+	db, err := sql.Open("sqlite3", "./apex.db")
+	if err != nil {
+		log.Fatalf("db connect error: %v", err)
+	}
 	return db
 }
 
