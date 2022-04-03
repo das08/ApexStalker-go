@@ -8,17 +8,17 @@ package models
 
 import "encoding/json"
 
-func UnmarshalApexAPI(data []byte) (UserStats, error) {
-	var r UserStats
+func UnmarshalApexAPI(data []byte) (ApexStats, error) {
+	var r ApexStats
 	err := json.Unmarshal(data, &r)
 	return r, err
 }
 
-func (r *UserStats) Marshal() ([]byte, error) {
+func (r *ApexStats) Marshal() ([]byte, error) {
 	return json.Marshal(r)
 }
 
-type UserStats struct {
+type ApexStats struct {
 	Data Data `json:"data"`
 }
 

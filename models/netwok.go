@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func GetApexStats(api_endpoint string, api_key string, platform string, uid string) *UserStats {
+func GetApexStats(api_endpoint string, api_key string, platform string, uid string) *ApexStats {
 	request, err := http.NewRequest("GET", api_endpoint+"/standard/profile/"+platform+"/"+uid, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -39,19 +39,19 @@ func GetApexStats(api_endpoint string, api_key string, platform string, uid stri
 	}
 
 	// Get specific stats
-	userStats := UserStats{}
-	jsonErr := json.Unmarshal(body, &userStats)
+	apexStats := ApexStats{}
+	jsonErr := json.Unmarshal(body, &apexStats)
 	if jsonErr != nil {
 		log.Fatal(jsonErr)
 	}
 
 	// Validate response data
-	if len(userStats.Data.Segments) == 0 {
+	if len(apexStats.Data.Segments) == 0 {
 		return nil
 	}
 
 	// Delete surplus data
-	userStats.Data.Segments = userStats.Data.Segments[:1]
+	apexStats.Data.Segments = apexStats.Data.Segments[:1]
 
-	return &userStats
+	return &apexStats
 }

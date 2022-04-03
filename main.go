@@ -20,7 +20,7 @@ func rankDiff(old int, new int) string {
 	return fmt.Sprintf(" (%s%d) ", sign, diff)
 }
 
-func compare(old models.UserData, new models.UserStats) (bool, *[]models.DiscordField, *models.UserDataDetail) {
+func compare(old models.UserData, new models.ApexStats) (bool, *[]models.DiscordField, *models.UserDataDetail) {
 	timestamp := time.Now().Unix()
 	hasUpdate := false
 	messageField := []models.DiscordField{}
@@ -63,11 +63,11 @@ func main() {
 		fmt.Printf("Old: %+v\n", v)
 
 		// Create go routine
-		userStats := models.GetApexStats(envs.APEX_API_ENDPOINT, envs.APEX_API_KEY, v.Platform, v.Uid)
+		apexStats := models.GetApexStats(envs.APEX_API_ENDPOINT, envs.APEX_API_KEY, v.Platform, v.Uid)
 		fmt.Printf("New: \n")
 
 		// Compare old with new stats data
-		hasUpdate, messageField, userDataDetail := compare(v, *userStats)
+		hasUpdate, messageField, userDataDetail := compare(v, *apexStats)
 		// Save new stats
 		models.UpdatePlayerData(db, v.Uid, *userDataDetail)
 
