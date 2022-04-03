@@ -3,6 +3,7 @@ package main
 import (
 	"apexstalker-go/models"
 	"fmt"
+	"log"
 	"time"
 )
 
@@ -25,7 +26,7 @@ func compare(old models.UserData, new models.ApexStats) (bool, *[]models.Discord
 	hasUpdate := false
 	messageField := []models.DiscordField{}
 
-	messageField = append(messageField, models.DiscordField{Name: "テスト配信", Value: "Hello from Go"})
+	//messageField = append(messageField, models.DiscordField{Name: "テスト配信", Value: "Hello from Go"})
 
 	level := int(new.Data.Segments[0].Stats.Level.Value)
 	trioRank := int(new.Data.Segments[0].Stats.RankScore.Value)
@@ -64,10 +65,15 @@ func main() {
 
 		// Create go routine
 		apexStats := models.GetApexStats(envs.APEX_API_ENDPOINT, envs.APEX_API_KEY, v.Platform, v.Uid)
-		fmt.Printf("New: \n")
+
+		if apexStats == nil {
+			log.Printf("error fetching: %s", v.Uid)
+			continue
+		}
 
 		// Compare old with new stats data
 		hasUpdate, messageField, userDataDetail := compare(v, *apexStats)
+		fmt.Printf("New: %#v\n", *userDataDetail)
 		// Save new stats
 		models.UpdatePlayerData(db, v.Uid, *userDataDetail)
 

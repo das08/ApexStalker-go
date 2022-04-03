@@ -16,6 +16,7 @@ type Environments struct {
 	SILVER_BADGE       string
 	GOLD_BADGE         string
 	PLATINUM_BADGE     string
+	DIAMOND_BADGE      string
 }
 
 func LoadEnv(debug bool) Environments {
@@ -42,6 +43,7 @@ func LoadEnv(debug bool) Environments {
 	env.SILVER_BADGE = os.Getenv("SILVER_BADGE")
 	env.GOLD_BADGE = os.Getenv("GOLD_BADGE")
 	env.PLATINUM_BADGE = os.Getenv("PLATINUM_BADGE")
+	env.DIAMOND_BADGE = os.Getenv("DIAMOND_BADGE")
 
 	return *env
 }
