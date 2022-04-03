@@ -9,16 +9,16 @@ import (
 )
 
 type UserData struct {
-	Uid         string `db:"uid"`
-	Platform    string `db:"platform"`
-	Stats       UserDataDetail
-	Last_update int `db:"last_update"`
+	Uid        string `db:"uid"`
+	Platform   string `db:"platform"`
+	Stats      UserDataDetail
+	LastUpdate int `db:"last_update"`
 }
 
 type UserDataDetail struct {
-	Level      int `db:"level"`
-	Trio_rank  int `db:"trio_rank"`
-	Arena_rank int `db:"arena_rank"`
+	Level     int `db:"level"`
+	TrioRank  int `db:"trio_rank"`
+	ArenaRank int `db:"arena_rank"`
 }
 
 func Connect() *sql.DB {
@@ -40,7 +40,7 @@ func GetPlayerData(db *sql.DB) []UserData {
 	defer rows.Close()
 	for rows.Next() {
 		var u UserData
-		err := rows.Scan(&u.Uid, &u.Platform, &u.Stats.Level, &u.Stats.Trio_rank, &u.Stats.Arena_rank, &u.Last_update)
+		err := rows.Scan(&u.Uid, &u.Platform, &u.Stats.Level, &u.Stats.TrioRank, &u.Stats.ArenaRank, &u.LastUpdate)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -53,7 +53,7 @@ func GetPlayerData(db *sql.DB) []UserData {
 
 func UpsertPlayerData(db *sql.DB, u UserData) {
 	query := `REPLACE INTO user_data values (?, ?, ?, ?, ?, ?)`
-	_, err := db.Exec(query, u.Uid, u.Platform, u.Stats.Level, u.Stats.Trio_rank, u.Stats.Arena_rank, u.Last_update)
+	_, err := db.Exec(query, u.Uid, u.Platform, u.Stats.Level, u.Stats.TrioRank, u.Stats.ArenaRank, u.LastUpdate)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -63,7 +63,7 @@ func UpsertPlayerData(db *sql.DB, u UserData) {
 func UpdatePlayerData(db *sql.DB, userID string, ud UserDataDetail) {
 	timestamp := time.Now().Unix()
 	query := `UPDATE user_data set level=?,trio_rank=?,arena_rank=?,last_update=? WHERE uid=?`
-	_, err := db.Exec(query, ud.Level, ud.Trio_rank, ud.Arena_rank, timestamp, userID)
+	_, err := db.Exec(query, ud.Level, ud.TrioRank, ud.ArenaRank, timestamp, userID)
 	if err != nil {
 		log.Fatal(err)
 		return

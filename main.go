@@ -30,20 +30,20 @@ func compare(old models.UserData, new models.UserStats) (bool, *[]models.Discord
 	level := int(new.Data.Segments[0].Stats.Level.Value)
 	trioRank := int(new.Data.Segments[0].Stats.RankScore.Value)
 	arenaRank := int(new.Data.Segments[0].Stats.ArenaRankScore.Value)
-	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.Level.Value) > old.Stats.Level {
+	if timestamp > int64(old.LastUpdate) && int(new.Data.Segments[0].Stats.Level.Value) > old.Stats.Level {
 		hasUpdate = true
 		messageField = append(messageField, models.DiscordField{Name: "レベル", Value: fmt.Sprint(old.Stats.Level) + "→" + fmt.Sprint(level) + rankDiff(old.Stats.Level, level) + ":laughing:", Inline: false})
 	}
-	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.RankScore.Value) != old.Stats.Trio_rank {
+	if timestamp > int64(old.LastUpdate) && int(new.Data.Segments[0].Stats.RankScore.Value) != old.Stats.TrioRank {
 		hasUpdate = true
-		messageField = append(messageField, models.DiscordField{Name: "トリオRank", Value: models.GetTrioTierBadge(&envs, old.Stats.Trio_rank) + fmt.Sprint(old.Stats.Trio_rank) + "→" + models.GetTrioTierBadge(&envs, trioRank) + fmt.Sprint(trioRank) + rankDiff(old.Stats.Trio_rank, trioRank), Inline: false})
+		messageField = append(messageField, models.DiscordField{Name: "トリオRank", Value: models.GetTrioTierBadge(&envs, old.Stats.TrioRank) + fmt.Sprint(old.Stats.TrioRank) + "→" + models.GetTrioTierBadge(&envs, trioRank) + fmt.Sprint(trioRank) + rankDiff(old.Stats.TrioRank, trioRank), Inline: false})
 	}
-	if timestamp > int64(old.Last_update) && int(new.Data.Segments[0].Stats.ArenaRankScore.Value) != old.Stats.Arena_rank {
+	if timestamp > int64(old.LastUpdate) && int(new.Data.Segments[0].Stats.ArenaRankScore.Value) != old.Stats.ArenaRank {
 		hasUpdate = true
-		messageField = append(messageField, models.DiscordField{Name: "アリーナRank", Value: models.GetArenaTierBadge(&envs, old.Stats.Arena_rank) + fmt.Sprint(old.Stats.Arena_rank) + "→" + models.GetArenaTierBadge(&envs, arenaRank) + fmt.Sprint(arenaRank) + rankDiff(old.Stats.Arena_rank, arenaRank), Inline: false})
+		messageField = append(messageField, models.DiscordField{Name: "アリーナRank", Value: models.GetArenaTierBadge(&envs, old.Stats.ArenaRank) + fmt.Sprint(old.Stats.ArenaRank) + "→" + models.GetArenaTierBadge(&envs, arenaRank) + fmt.Sprint(arenaRank) + rankDiff(old.Stats.ArenaRank, arenaRank), Inline: false})
 	}
 
-	userDataDetail := models.UserDataDetail{Level: level, Trio_rank: trioRank, Arena_rank: arenaRank}
+	userDataDetail := models.UserDataDetail{Level: level, TrioRank: trioRank, ArenaRank: arenaRank}
 
 	return hasUpdate, &messageField, &userDataDetail
 }
