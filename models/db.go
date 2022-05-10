@@ -3,7 +3,7 @@ package models
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"time"
 )
@@ -21,9 +21,9 @@ type UserDataDetail struct {
 	ArenaRank int `db:"arena_rank"`
 }
 
-func Connect() *sql.DB {
+func Connect(e *Environments) *sql.DB {
 	// Create db client
-	db, err := sql.Open("sqlite3", "./apex.db")
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(localhost:3600)/%s", e.MARIADB_USER, e.MARIADB_PASSWORD, e.MARIADB_DATABASE))
 	if err != nil {
 		log.Fatalf("db connect error: %v", err)
 	}
@@ -32,7 +32,8 @@ func Connect() *sql.DB {
 
 func GetPlayerData(db *sql.DB) []UserData {
 	var userData []UserData
-	rows, err := db.Query(`SELECT * FROM user_data`)
+	rows, err := db.Query(`SELECT uid, platform, level, trio_rank, arena_rank, last_update FROM user_data`)
+
 	if err != nil {
 		panic(err)
 	}
