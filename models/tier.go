@@ -9,8 +9,10 @@ func GetTrioTierBadge(env *Environments, rank int) string {
 		badge = env.SILVER_BADGE
 	case rank < 4800:
 		badge = env.GOLD_BADGE
-	default:
+	case rank < 7200:
 		badge = env.PLATINUM_BADGE
+	default:
+		badge = env.DIAMOND_BADGE
 	}
 
 	return badge
@@ -25,8 +27,10 @@ func GetArenaTierBadge(env *Environments, rank int) string {
 		badge = env.SILVER_BADGE
 	case rank < 4800:
 		badge = env.GOLD_BADGE
-	default:
+	case rank < 6400:
 		badge = env.PLATINUM_BADGE
+	default:
+		badge = env.DIAMOND_BADGE
 	}
 
 	return badge
