@@ -54,7 +54,7 @@ func main() {
 	envs = models.LoadEnv(true)
 
 	// Create db connection client
-	db := models.Connect()
+	db := models.Connect(&envs)
 	defer db.Close()
 
 	// Load old stats list
