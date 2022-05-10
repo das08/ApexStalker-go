@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  app:
+    container_name: apex-rankwatcher
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    tty: true
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "8081:8081"
