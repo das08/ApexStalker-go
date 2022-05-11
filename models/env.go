@@ -17,8 +17,10 @@ type Environments struct {
 	GOLD_BADGE         string
 	PLATINUM_BADGE     string
 	DIAMOND_BADGE      string
+	MARIADB_HOST       string
 	MARIADB_USER       string
 	MARIADB_PASSWORD   string
+	MARIADB_PORT       string
 	MARIADB_DATABASE   string
 }
 
@@ -27,8 +29,6 @@ func LoadEnv(debug bool) Environments {
 	// LOADS .env file
 	if debug {
 		err = godotenv.Load(".env_local")
-	} else {
-		err = godotenv.Load(".env_prod")
 	}
 
 	if err != nil {
@@ -47,8 +47,10 @@ func LoadEnv(debug bool) Environments {
 	env.GOLD_BADGE = os.Getenv("GOLD_BADGE")
 	env.PLATINUM_BADGE = os.Getenv("PLATINUM_BADGE")
 	env.DIAMOND_BADGE = os.Getenv("DIAMOND_BADGE")
+	env.MARIADB_HOST = os.Getenv("MARIADB_HOST")
 	env.MARIADB_USER = os.Getenv("MARIADB_USER")
 	env.MARIADB_PASSWORD = os.Getenv("MARIADB_PASSWORD")
+	env.MARIADB_PORT = os.Getenv("MARIADB_PORT")
 	env.MARIADB_DATABASE = os.Getenv("MARIADB_DATABASE")
 
 	return *env
